@@ -8,9 +8,14 @@
     "scheme": "videodiary",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "com.mustafa.videodiary",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Video seçebilmek için galerinize erişmemiz gerekiyor."
+      }
     },
     "android": {
+      "package": "com.mustafa.videodiary",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -31,6 +36,14 @@
           "backgroundColor": "#208AEF",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
+        }
+      ],
+      "expo-sqlite",
+      "expo-video",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Video seçebilmek için galerinize erişmemiz gerekiyor."
         }
       ]
     ],
