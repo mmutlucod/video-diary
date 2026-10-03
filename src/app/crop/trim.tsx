@@ -9,9 +9,9 @@ import { Pressable, Text, View } from "react-native";
 import { Scrubber } from "@/components/scrubber";
 import { VideoPlayer } from "@/components/video-player";
 import { CLIP_DURATION_SECONDS } from "@/constants/app";
+import { useBottomPadding } from "@/hooks/use-bottom-padding";
 import { useCropStore } from "@/store/crop-store";
 import { formatDuration } from "@/utils/time";
-
 /** Sürükleme sırasında seek + store güncellemesi arasındaki en kısa süre */
 const SCRUB_THROTTLE_MS = 120;
 
@@ -32,6 +32,7 @@ function TimeLabel() {
 
 export default function TrimScreen() {
   const router = useRouter();
+  const bottomPadding = useBottomPadding();
   const sourceUri = useCropStore((s) => s.sourceUri);
   const sourceDuration = useCropStore((s) => s.sourceDuration);
   const setStartTime = useCropStore((s) => s.setStartTime);
@@ -93,7 +94,10 @@ export default function TrimScreen() {
   }
 
   return (
-    <View className="flex-1 bg-white px-5 pb-8 pt-4">
+    <View
+      className="flex-1 bg-white px-5 pt-4"
+      style={{ paddingBottom: bottomPadding }}
+      >
       <VideoPlayer player={player} rounded />
 
       <TimeLabel />

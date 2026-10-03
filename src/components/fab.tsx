@@ -4,6 +4,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type Props = {
   onPress: () => void;
@@ -11,6 +12,7 @@ type Props = {
 };
 
 export function Fab({ onPress, label }: Props) {
+  const insets = useSafeAreaInsets();
   const scale = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.get() }],
@@ -18,7 +20,10 @@ export function Fab({ onPress, label }: Props) {
 
   return (
     <Animated.View
-      style={[{ position: "absolute", bottom: 32, right: 24 }, animatedStyle]}
+      style={[
+        { position: "absolute", bottom: insets.bottom + 24, right: 24 },
+        animatedStyle,
+      ]}
     >
       <Pressable
         onPressIn={() => scale.set(withSpring(0.9))}

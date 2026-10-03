@@ -25,7 +25,6 @@ const queryClient = new QueryClient({
  */
 function AdaptiveStatusBar() {
   const { top } = useSafeAreaInsets();
-  if (__DEV__) console.log("safe area top inset:", top);
   return <StatusBar style={top > 0 ? "dark" : "light"} />;
 }
 

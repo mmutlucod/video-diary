@@ -4,11 +4,12 @@ import { useState } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
 import { CLIP_DURATION_SECONDS } from "@/constants/app";
+import { useBottomPadding } from "@/hooks/use-bottom-padding";
 import { useCropStore } from "@/store/crop-store";
 import { formatDuration } from "@/utils/time";
-
 export default function SelectScreen() {
   const router = useRouter();
+  const bottomPadding = useBottomPadding();
   const sourceUri = useCropStore((s) => s.sourceUri);
   const sourceDuration = useCropStore((s) => s.sourceDuration);
   const setSource = useCropStore((s) => s.setSource);
@@ -50,7 +51,10 @@ export default function SelectScreen() {
   const hasSource = Boolean(sourceUri);
 
   return (
-    <View className="flex-1 bg-white px-5 pb-8 pt-6">
+    <View
+      className="flex-1 bg-white px-5 pt-6"
+      style={{ paddingBottom: bottomPadding }}
+      >
       <Pressable
         onPress={pickVideo}
         disabled={isPicking}

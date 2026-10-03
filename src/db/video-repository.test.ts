@@ -2,7 +2,6 @@ import type { SQLiteDatabase } from "expo-sqlite";
 
 import { videoRepository } from "./video-repository";
 
-// expo-file-system'e bağımlı olmadan URI çözümlemesini taklit et.
 jest.mock("@/utils/file", () => ({
   resolveVideoUri: (path: string) => `file:///docs/${path}`,
 }));
