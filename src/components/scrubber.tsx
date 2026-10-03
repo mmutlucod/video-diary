@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { type LayoutChangeEvent, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
@@ -36,14 +36,6 @@ export function Scrubber({
   const x = useSharedValue(0);
   const dragStartX = useSharedValue(0);
 
-  // Callback'ler her render'da değişse bile gesture yeniden oluşmasın.
-  const onScrubRef = useRef(onScrub);
-  const onScrubEndRef = useRef(onScrubEnd);
-  onScrubRef.current = onScrub;
-  onScrubEndRef.current = onScrubEnd;
-
-  const initialStartRef = useRef(initialStartTime);
-
   const selectableRange = Math.max(duration - clipDuration, 0);
   const windowWidth = Math.max(
     (trackWidth * clipDuration) / Math.max(duration, clipDuration),
@@ -51,11 +43,9 @@ export function Scrubber({
   );
   const maxX = Math.max(trackWidth - windowWidth, 0);
 
-  // Sadece genişlik ölçülünce konumla; sürükleme sırasında dokunma.
   useEffect(() => {
-    x.value =
-      selectableRange > 0 ? (initialStartRef.current / selectableRange) * maxX : 0;
-  }, [selectableRange, maxX, x]);
+    x.set(selectableRange > 0 ? (initialStartTime / selectableRange) * maxX : 0);
+  }, [initialStartTime, selectableRange, maxX, x]);
 
   const pan = useMemo(() => {
     const toTime = (pos: number) =>
@@ -64,20 +54,20 @@ export function Scrubber({
     return Gesture.Pan()
       .runOnJS(true)
       .onStart(() => {
-        dragStartX.value = x.value;
+        dragStartX.set(x.get());
       })
       .onUpdate((e) => {
-        const next = clamp(dragStartX.value + e.translationX, 0, maxX);
-        x.value = next;
-        onScrubRef.current(toTime(next));
+        const next = clamp(dragStartX.get() + e.translationX, 0, maxX);
+        x.set(next);
+        onScrub(toTime(next));
       })
       .onEnd(() => {
-        onScrubEndRef.current(toTime(x.value));
+        onScrubEnd(toTime(x.get()));
       });
-  }, [maxX, selectableRange, x, dragStartX]);
+  }, [maxX, selectableRange, x, dragStartX, onScrub, onScrubEnd]);
 
   const windowStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: x.value }],
+    transform: [{ translateX: x.get() }],
   }));
 
   const onLayout = (e: LayoutChangeEvent) =>

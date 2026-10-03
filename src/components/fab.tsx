@@ -1,8 +1,8 @@
 import { Pressable, Text } from "react-native";
 import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
 } from "react-native-reanimated";
 
 type Props = {
@@ -13,7 +13,7 @@ type Props = {
 export function Fab({ onPress, label }: Props) {
   const scale = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
+    transform: [{ scale: scale.get() }],
   }));
 
   return (
@@ -21,12 +21,8 @@ export function Fab({ onPress, label }: Props) {
       style={[{ position: "absolute", bottom: 32, right: 24 }, animatedStyle]}
     >
       <Pressable
-        onPressIn={() => {
-          scale.value = withSpring(0.9);
-        }}
-        onPressOut={() => {
-          scale.value = withSpring(1);
-        }}
+        onPressIn={() => scale.set(withSpring(0.9))}
+        onPressOut={() => scale.set(withSpring(1))}
         onPress={onPress}
         accessibilityRole="button"
         accessibilityLabel={label}

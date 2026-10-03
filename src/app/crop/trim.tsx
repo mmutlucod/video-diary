@@ -1,6 +1,9 @@
 import { useRouter } from "expo-router";
-import { useVideoPlayer } from "expo-video";
-import { useCallback, useEffect, useRef } from "react";
+import {
+  useVideoPlayer,
+  type VideoPlayer as ExpoVideoPlayer,
+} from "expo-video";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
 import { Scrubber } from "@/components/scrubber";
@@ -9,7 +12,13 @@ import { CLIP_DURATION_SECONDS } from "@/constants/app";
 import { useCropStore } from "@/store/crop-store";
 import { formatDuration } from "@/utils/time";
 
+/** Sürükleme sırasında seek + store güncellemesi arasındaki en kısa süre */
 const SCRUB_THROTTLE_MS = 120;
+
+/** Player nesnesi bileşen dışında değiştirilir (React Compiler uyumu için). */
+function seekTo(player: ExpoVideoPlayer, seconds: number) {
+  player.currentTime = seconds;
+}
 
 function TimeLabel() {
   const startTime = useCropStore((s) => s.startTime);
@@ -27,8 +36,7 @@ export default function TrimScreen() {
   const sourceDuration = useCropStore((s) => s.sourceDuration);
   const setStartTime = useCropStore((s) => s.setStartTime);
 
-  // İlk değer sadece açılışta okunur; render tetiklemez.
-  const initialStartTime = useRef(useCropStore.getState().startTime).current;
+  const [initialStartTime] = useState(() => useCropStore.getState().startTime);
   const startRef = useRef(initialStartTime);
   const lastCommitRef = useRef(0);
 
@@ -43,7 +51,7 @@ export default function TrimScreen() {
     const sub = player.addListener("timeUpdate", ({ currentTime }) => {
       const start = startRef.current;
       if (currentTime >= start + CLIP_DURATION_SECONDS || currentTime < start - 0.5) {
-        player.currentTime = start;
+        seekTo(player, start);
       }
     });
     return () => sub.remove();
@@ -56,7 +64,7 @@ export default function TrimScreen() {
       if (now - lastCommitRef.current < SCRUB_THROTTLE_MS) return;
       lastCommitRef.current = now;
       setStartTime(time);
-      player.currentTime = time;
+      seekTo(player, time);
     },
     [player, setStartTime],
   );
@@ -65,7 +73,7 @@ export default function TrimScreen() {
     (time: number) => {
       startRef.current = time;
       setStartTime(time);
-      player.currentTime = time;
+      seekTo(player, time);
     },
     [player, setStartTime],
   );
@@ -86,7 +94,7 @@ export default function TrimScreen() {
 
   return (
     <View className="flex-1 bg-white px-5 pb-8 pt-4">
-       <VideoPlayer player={player} rounded />
+      <VideoPlayer player={player} rounded />
 
       <TimeLabel />
       <Text className="mb-4 text-center text-sm text-gray-500">
