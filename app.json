@@ -8,7 +8,7 @@
     "scheme": "videodiary",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon",
+      "icon": "./assets/images/icon.png",
       "bundleIdentifier": "com.mustafa.videodiary",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Video seçebilmek için galerinize erişmemiz gerekiyor."

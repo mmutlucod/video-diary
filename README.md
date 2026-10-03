@@ -1,56 +1,84 @@
-# Welcome to your Expo app 👋
+# Video Diary
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React Native (Expo) app to import a video, crop a 5-second segment, add a name and description, and keep the result in a persistent list.
 
-## Get started
+## Features
 
-1. Install dependencies
+- Import a video from the device gallery
+- Select a 5-second segment with a draggable scrubber and a looping live preview
+- Add a name and description (validated with Zod)
+- Crop natively with `expo-trim-video`, executed through a TanStack Query mutation
+- Persistent list of clips backed by SQLite
+- Detail page with playback, metadata and delete
 
-   ```bash
-   npm install
-   ```
+## Tech stack
 
-2. Start the app
+Expo (SDK 56) · Expo Router · Zustand · TanStack Query · expo-trim-video · NativeWind · expo-video · expo-sqlite · React Native Reanimated + Gesture Handler · Zod
 
-   ```bash
-   npx expo start
-   ```
+## Getting started
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+`expo-trim-video` is a native module, so the app does **not** run in Expo Go. A development build is required.
 
 ```bash
-npm run reset-project
+npm install
+npx expo prebuild
+npx expo run:ios       # macOS only
+npx expo run:android
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Afterwards, `npx expo start --dev-client` is enough.
 
-### Other setup steps
+Requirements: Node LTS, Xcode 26.5+ for iOS (older versions fail to compile `expo-modules-jsi`), Android Studio with an emulator or device.
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+## Usage
 
-## Learn more
+1. Tap **+** on the home screen.
+2. Pick a video (at least 5 seconds long).
+3. Drag the window on the scrubber to choose the segment, then continue.
+4. Enter a name (required) and an optional description, then tap **Crop and save**.
+5. Tap a card on the home screen to open its detail page; use **Delete** to remove it.
 
-To learn more about developing your project with Expo, look at the following resources:
+## Architecture
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+| Concern | Tool | Notes |
+|---|---|---|
+| Persistent data | SQLite (`expo-sqlite`) | Versioned migrations via `PRAGMA user_version` |
+| Server/async state | TanStack Query | Reads, writes and the trim operation |
+| Wizard state | Zustand | Source video, duration and start time only |
+| Validation | Zod | Shared limits from `constants/app.ts` |
+| Navigation | Expo Router | Crop flow is a modal stack |
 
-## Join the community
+```
+src/
+  app/            routes only (index, video/[id], crop/select|trim|details)
+  components/     VideoCard, Scrubber, FormField
+  constants/      clip duration, DB name, field limits
+  db/             migrations, schema/mappers, video repository
+  hooks/          useVideos, useVideo, useDeleteVideo, useCreateVideo
+  schemas/        Zod form schema
+  store/          crop wizard store
+  utils/          file helpers, time formatting, trim error mapping
+```
 
-Join our community of developers creating universal apps.
+Save flow (`useCreateVideo`): `trimVideo` → move output to `documentDirectory/videos` → insert row → invalidate the list query. If the insert fails, the moved file is removed so no orphan files remain.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Key decisions
+
+- **SQLite for the list, Zustand only for the wizard.** Persistent, queryable data lives in a database; Zustand holds short-lived UI state that is reset when the modal closes.
+- **Relative file paths in the DB.** The iOS app container path can change between installs/updates, so the DB stores `videos/<timestamp>.mp4` and the absolute URI is resolved on read.
+- **Trim output is moved out of the cache** into the document directory, because the OS may purge cache files.
+- **Repository functions take `db` as an argument**, keeping the data layer independent of React and easy to test.
+- **Scrubber uses a fixed-width window** (clip length / video length) so the selection is always exactly 5 seconds; the preview loops only that range.
+- **Memoized list items** with stable callbacks and `keyExtractor` for smooth `FlatList` scrolling.
+
+## Known limitations
+
+- On Android, `expo-trim-video` copies samples without re-encoding, so the cut snaps to the nearest keyframe and the real duration may differ slightly from 5.00 s.
+- No list thumbnails: `expo-video-thumbnails` is deprecated and removed in SDK 56, and `expo-video`'s `generateThumbnailsAsync` requires a player instance per video. A saved-at-creation thumbnail would be the next improvement.
+- Light theme only.
+
+## Possible next steps
+
+- Persist thumbnails generated at save time
+- Dark mode
+- Unit tests for the repository and Zod schema
