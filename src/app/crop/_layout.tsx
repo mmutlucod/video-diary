@@ -15,6 +15,7 @@ export default function CropLayout() {
       screenOptions={{
         headerTitleAlign: "center",
         headerShadowVisible: false,
+        headerBackButtonDisplayMode: "minimal",
         headerRight: () => (
           <Pressable
             onPress={() => router.dismissTo("/")}

@@ -1,10 +1,10 @@
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useVideoPlayer, VideoView } from "expo-video";
-import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from "react-native";
-
+import { VideoPlayer } from "@/components/video-player";
 import { useDeleteVideo, useVideo } from "@/hooks/use-videos";
 import { formatDate, formatDuration } from "@/utils/time";
-
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { useVideoPlayer } from "expo-video";
+import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from "react-native";
+import Animated, { FadeInDown } from "react-native-reanimated";
 export default function VideoDetailScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -57,6 +57,7 @@ export default function VideoDetailScreen() {
     <>
       <Stack.Screen
         options={{
+          headerBackButtonDisplayMode: "minimal",
           headerRight: () => (
             <View className="flex-row gap-5">
               <Pressable
@@ -86,16 +87,9 @@ export default function VideoDetailScreen() {
         }}
       />
       <ScrollView className="flex-1 bg-white" contentContainerClassName="pb-10">
-        <View className="aspect-video w-full bg-black">
-          <VideoView
-            player={player}
-            style={{ flex: 1 }}
-            contentFit="contain"
-            nativeControls
-          />
-        </View>
+        <VideoPlayer player={player} nativeControls />
 
-        <View className="px-5 pt-5">
+          <Animated.View entering={FadeInDown.duration(350)} className="px-5 pt-5">
           <Text className="text-2xl font-bold text-gray-900">{video.name}</Text>
           <Text className="mt-1 text-sm text-gray-400">
             {formatDate(video.createdAt)} · {formatDuration(video.duration)}
@@ -116,7 +110,7 @@ export default function VideoDetailScreen() {
               Silinemedi, tekrar dene.
             </Text>
           ) : null}
-        </View>
+        </Animated.View>
       </ScrollView>
     </>
   );

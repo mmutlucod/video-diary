@@ -13,6 +13,10 @@ const MIGRATIONS: readonly string[] = [
   );
   CREATE INDEX idx_videos_created_at ON videos (created_at DESC);
   `,
+  `
+  DROP INDEX idx_videos_created_at;
+  CREATE INDEX idx_videos_created_at_id ON videos (created_at DESC, id DESC);
+  `,
 ];
 
 export async function migrateDb(db: SQLiteDatabase): Promise<void> {

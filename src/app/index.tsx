@@ -1,18 +1,34 @@
 import { useRouter } from "expo-router";
-import { useCallback } from "react";
-import { ActivityIndicator, FlatList, Pressable, Text, View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Fab } from "@/components/fab";
 import { VideoCard } from "@/components/video-card";
 import type { Video } from "@/db/schema";
-import { useVideos } from "@/hooks/use-videos";
+import { useVideoCount, useVideos } from "@/hooks/use-videos";
+
+const ANIMATED_ITEMS = 8;
 
 const keyExtractor = (item: Video) => String(item.id);
 const ItemSeparator = () => <View className="h-3" />;
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { data, isPending, isError, refetch } = useVideos();
+  const {
+    data,
+    isPending,
+    isError,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useVideos();
+  const { data: count } = useVideoCount();
+
+  const [layoutHeight, setLayoutHeight] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
 
   const handlePress = useCallback(
     (id: number) =>
@@ -20,19 +36,38 @@ export default function HomeScreen() {
     [router],
   );
 
+  const handleEndReached = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  useEffect(() => {
+    if (layoutHeight > 0 && contentHeight > 0 && contentHeight < layoutHeight) {
+      handleEndReached();
+    }
+  }, [layoutHeight, contentHeight, handleEndReached]);
+
   const renderItem = useCallback(
-    ({ item }: { item: Video }) => (
-      <VideoCard video={item} onPress={handlePress} />
+    ({ item, index }: { item: Video; index: number }) => (
+      <Animated.View
+        entering={
+          index < ANIMATED_ITEMS
+            ? FadeInDown.delay(index * 50).duration(300)
+            : undefined
+        }
+      >
+        <VideoCard video={item} onPress={handlePress} />
+      </Animated.View>
     ),
     [handlePress],
   );
+
+  const isEmpty = !data?.length;
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
       <View className="px-5 pb-3 pt-2">
         <Text className="text-3xl font-bold text-gray-900">Video Diary</Text>
         <Text className="mt-1 text-sm text-gray-500">
-          {data?.length ? `${data.length} kayıt` : "5 saniyelik anılarını biriktir"}
+          {count ? `${count} kayıt` : "5 saniyelik anılarını biriktir"}
         </Text>
       </View>
 
@@ -53,33 +88,40 @@ export default function HomeScreen() {
           </Pressable>
         </View>
       ) : (
-        <FlatList
+        <Animated.FlatList
           data={data}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
           ItemSeparatorComponent={ItemSeparator}
-          contentContainerClassName="px-5 pb-28 grow"
+          onEndReached={handleEndReached}
+          onEndReachedThreshold={0.5}
+          onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
+          onContentSizeChange={(_, h) => setContentHeight(h)}
+          contentContainerClassName={isEmpty ? "px-5 pb-28 grow" : "px-5 pb-28"}
+          ListFooterComponent={
+            isFetchingNextPage ? (
+              <View className="py-4">
+                <ActivityIndicator />
+              </View>
+            ) : null
+          }
           ListEmptyComponent={
-            <View className="flex-1 items-center justify-center px-8">
+            <Animated.View
+              entering={FadeIn.duration(400)}
+              className="flex-1 items-center justify-center px-8"
+            >
               <Text className="text-lg font-semibold text-gray-800">
                 Henüz video yok
               </Text>
               <Text className="mt-1 text-center text-sm text-gray-500">
                 Sağ alttaki + butonuyla bir video seç ve 5 saniyelik bir bölümünü kaydet.
               </Text>
-            </View>
+            </Animated.View>
           }
         />
       )}
 
-      <Pressable
-        onPress={() => router.push("/crop/select")}
-        accessibilityRole="button"
-        accessibilityLabel="Yeni video ekle"
-        className="absolute bottom-8 right-6 h-16 w-16 items-center justify-center rounded-full bg-indigo-600 shadow-lg active:bg-indigo-700"
-      >
-        <Text className="text-3xl font-light text-white">+</Text>
-      </Pressable>
+      <Fab label="Yeni video ekle" onPress={() => router.push("/crop/select")} />
     </SafeAreaView>
   );
 }

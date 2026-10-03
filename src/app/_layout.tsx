@@ -12,8 +12,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DB_NAME } from "@/constants/app";
 import { migrateDb } from "@/db/migrations";
 
-// Component dışında: re-render'da yeniden oluşmaz.
-// Veri yalnızca bizim mutation'larımızla değiştiği için staleTime sonsuz.
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: { staleTime: Infinity, retry: false },

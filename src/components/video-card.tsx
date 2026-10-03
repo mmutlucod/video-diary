@@ -18,7 +18,7 @@ function VideoCardBase({ video, onPress }: Props) {
       className="flex-row items-center rounded-2xl border border-gray-200 bg-white p-3 active:bg-gray-50"
     >
       <View className="h-14 w-14 items-center justify-center rounded-xl bg-indigo-100">
-        <Text className="text-xl text-indigo-600">▶</Text>
+        <Text className="text-2xl text-indigo-600">▶</Text>
       </View>
 
       <View className="ml-3 flex-1">

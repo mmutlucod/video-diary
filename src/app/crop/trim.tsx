@@ -1,14 +1,14 @@
 import { useRouter } from "expo-router";
-import { useVideoPlayer, VideoView } from "expo-video";
+import { useVideoPlayer } from "expo-video";
 import { useCallback, useEffect, useRef } from "react";
 import { Pressable, Text, View } from "react-native";
 
 import { Scrubber } from "@/components/scrubber";
+import { VideoPlayer } from "@/components/video-player";
 import { CLIP_DURATION_SECONDS } from "@/constants/app";
 import { useCropStore } from "@/store/crop-store";
 import { formatDuration } from "@/utils/time";
 
-/** Sürükleme sırasında seek + store güncellemesi arasındaki en kısa süre */
 const SCRUB_THROTTLE_MS = 120;
 
 function TimeLabel() {
@@ -39,7 +39,6 @@ export default function TrimScreen() {
     p.play();
   });
 
-  // Seçilen pencereyi döngüde oynat.
   useEffect(() => {
     const sub = player.addListener("timeUpdate", ({ currentTime }) => {
       const start = startRef.current;
@@ -50,7 +49,6 @@ export default function TrimScreen() {
     return () => sub.remove();
   }, [player]);
 
-  // Sürükleme: ref anında güncellenir, ağır işler (seek + store) kısıtlanır.
   const handleScrub = useCallback(
     (time: number) => {
       startRef.current = time;
@@ -63,7 +61,6 @@ export default function TrimScreen() {
     [player, setStartTime],
   );
 
-  // Parmak kalkınca kesin değeri yaz.
   const handleScrubEnd = useCallback(
     (time: number) => {
       startRef.current = time;
@@ -74,7 +71,6 @@ export default function TrimScreen() {
   );
 
   if (!sourceUri) {
-    // Doğrudan bu ekrana gelinirse (ör. deep link) başa dön.
     return (
       <View className="flex-1 items-center justify-center bg-white px-8">
         <Text className="text-center text-gray-700">Önce bir video seçmelisin.</Text>
@@ -90,14 +86,7 @@ export default function TrimScreen() {
 
   return (
     <View className="flex-1 bg-white px-5 pb-8 pt-4">
-      <View className="aspect-video w-full overflow-hidden rounded-2xl bg-black">
-        <VideoView
-          player={player}
-          style={{ flex: 1 }}
-          contentFit="contain"
-          nativeControls={false}
-        />
-      </View>
+       <VideoPlayer player={player} rounded />
 
       <TimeLabel />
       <Text className="mb-4 text-center text-sm text-gray-500">
