@@ -17,8 +17,8 @@ A React Native (Expo) app to import a video, crop a 5-second segment, add a name
 
 | Platform | Recording |
 |---|---|
-| Android | [android.mp4](docs/demo/android.mp4) |
-| iOS | [iphone.mp4](docs/demo/iphone.mp4) |
+| Android | [android.mp4](https://github.com/mmutlucod/video-diary/raw/refs/heads/main/docs/demo/android.mp4) |
+| iOS | [iphone.mp4](https://github.com/mmutlucod/video-diary/raw/refs/heads/main/docs/demo/iphone.mp4) |
 
 ## Tech stack
 
