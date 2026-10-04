@@ -15,21 +15,26 @@ A React Native (Expo) app to import a video, crop a 5-second segment, add a name
 
 ## Demo
 
-<table>
+<div align="center">
+
+<table align="center">
   <tr>
     <th align="center">Android</th>
+    <td width="48"></td>
     <th align="center">iOS</th>
   </tr>
   <tr>
-    <td>
+    <td align="center">
       <video src="https://github.com/user-attachments/assets/5e574365-7112-402a-90e3-43ca63d50746" controls width="320"></video>
     </td>
-    <td>
+    <td width="48"></td>
+    <td align="center">
       <video src="https://github.com/user-attachments/assets/59e17528-7399-4d08-89b2-d5cf8d62079e" controls width="320"></video>
     </td>
   </tr>
 </table>
 
+</div>
 
 ## Tech stack
 
