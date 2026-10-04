@@ -87,23 +87,27 @@ export default function VideoDetailScreen() {
         }}
       />
       <ScrollView className="flex-1 bg-white" contentContainerClassName="pb-10">
-        <VideoPlayer player={player} nativeControls />
+        <View className="px-5 pt-4">
+          <VideoPlayer player={player} nativeControls rounded />
+        </View>
 
-          <Animated.View entering={FadeInDown.duration(350)} className="px-5 pt-5">
+        <Animated.View entering={FadeInDown.duration(350)} className="px-5 pt-5">
           <Text className="text-2xl font-bold text-gray-900">{video.name}</Text>
           <Text className="mt-1 text-sm text-gray-400">
             {formatDate(video.createdAt)} · {formatDuration(video.duration)}
           </Text>
 
-          {video.description ? (
-            <Text className="mt-4 text-base leading-6 text-gray-700">
-              {video.description}
-            </Text>
-          ) : (
-            <Text className="mt-4 text-base italic text-gray-400">
-              Açıklama yok
-            </Text>
-          )}
+          <View className="mt-4 rounded-2xl bg-gray-50 p-4">
+            {video.description ? (
+              <Text className="text-base leading-6 text-gray-700">
+                {video.description}
+              </Text>
+            ) : (
+              <Text className="text-base italic text-gray-400">
+                Açıklama yok
+              </Text>
+            )}
+          </View>
 
           {deleteMutation.isError ? (
             <Text className="mt-4 text-sm text-red-600">

@@ -15,11 +15,10 @@ A React Native (Expo) app to import a video, crop a 5-second segment, add a name
 
 ## Demo
 
-| Video | What it shows |
+| Platform | Recording |
 |---|---|
-| [Crop flow](docs/demo/crop-flow.mp4) | Pick a video, choose the segment, add details, save |
-| [Detail, edit and delete](docs/demo/detail-edit-delete.mp4) | Open a clip, edit its metadata, delete it |
-| [List and pagination](docs/demo/list-and-pagination.mp4) | Persistent list, animations and paged loading |
+| Android | [android.mp4](docs/demo/android.mp4) |
+| iOS | [iphone.mp4](docs/demo/iphone.mp4) |
 
 ## Tech stack
 

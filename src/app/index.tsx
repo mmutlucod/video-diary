@@ -64,11 +64,21 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
-      <View className="px-5 pb-3 pt-2">
-        <Text className="text-3xl font-bold text-gray-900">Video Diary</Text>
-        <Text className="mt-1 text-sm text-gray-500">
-          {count ? `${count} kayıt` : "5 saniyelik anılarını biriktir"}
-        </Text>
+      <View className="flex-row items-end justify-between px-5 pb-4 pt-3">
+        <View className="flex-1 pr-3">
+          <Text className="text-3xl font-bold text-gray-900">Video Diary</Text>
+          <Text className="mt-1 text-sm text-gray-500">
+            5 saniyelik anılarını biriktir
+          </Text>
+        </View>
+
+        {count ? (
+          <View className="rounded-full bg-indigo-100 px-3 py-1.5">
+            <Text className="text-sm font-semibold text-indigo-700">
+              {count} kayıt
+            </Text>
+          </View>
+        ) : null}
       </View>
 
       {isPending ? (

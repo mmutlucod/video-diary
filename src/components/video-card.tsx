@@ -15,10 +15,10 @@ function VideoCardBase({ video, onPress }: Props) {
       onPress={() => onPress(video.id)}
       accessibilityRole="button"
       accessibilityLabel={`${video.name}, ${formatDuration(video.duration)}`}
-      className="flex-row items-center rounded-2xl border border-gray-200 bg-white p-3 active:bg-gray-50"
+      className="flex-row items-center rounded-3xl border border-gray-100 bg-white p-3 shadow-sm active:opacity-80"
     >
-      <View className="h-14 w-14 items-center justify-center rounded-xl bg-indigo-100">
-        <Text className="text-2xl text-indigo-600">▶</Text>
+      <View className="h-20 w-20 items-center justify-center rounded-2xl bg-indigo-500">
+        <Text className="text-3xl text-white">▶</Text>
       </View>
 
       <View className="ml-3 flex-1">
@@ -34,6 +34,7 @@ function VideoCardBase({ video, onPress }: Props) {
           {formatDate(video.createdAt)} · {formatDuration(video.duration)}
         </Text>
       </View>
+      <Text className="ml-2 text-2xl text-gray-300">›</Text>
     </Pressable>
   );
 }
