@@ -13,12 +13,17 @@ A React Native (Expo) app to import a video, crop a 5-second segment, add a name
 - Edit page to update a clip's name and description
 - Reanimated animations: staggered list entrance, FAB press feedback, detail entrance
 
-## Demo
+   ## Demo
 
-| Platform | Recording |
-|---|---|
-| Android | [android.mp4](https://github.com/mmutlucod/video-diary/raw/refs/heads/main/docs/demo/android.mp4) |
-| iOS | [iphone.mp4](https://github.com/mmutlucod/video-diary/raw/refs/heads/main/docs/demo/iphone.mp4) |
+   **Android**
+  
+  https://github.com/user-attachments/assets/5e574365-7112-402a-90e3-43ca63d50746
+
+   **iOS**
+
+https://github.com/user-attachments/assets/59e17528-7399-4d08-89b2-d5cf8d62079e
+
+
 
 ## Tech stack
 
